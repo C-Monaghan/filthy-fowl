@@ -1,0 +1,28 @@
+---
+title: A mixed meta-analysis of future self-continuity and health behaviours
+author:
+  - name: Fuschia Sirois
+    url: https://www.durham.ac.uk/staff/fuschia-sirois/
+    orcid: https://orcid.org/0000-0002-0927-277X
+    affiliation: Department of Psychology, Durham University
+  - name: Cormac Monaghan
+    url: https://c-monaghan.github.io/
+    orcid: https://orcid.org/0000-0001-9012-3060
+    affiliation: Hamilton Institute, Maynooth University
+format:
+  html:
+    toc: false
+    code-tools: false
+sidebar: false
+editor:
+    markdown:
+      wrap: 80
+---
+
+## Abstract
+
+TO WRITE
+
+### Code
+
+All the code and analysis for this paper is available in a [GitHub repository](https://github.com/C-Monaghan/filthy-fowl).

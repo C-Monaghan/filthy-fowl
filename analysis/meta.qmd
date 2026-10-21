@@ -1,0 +1,617 @@
+---
+title: Meta analysis results
+editor:
+  markdown:
+    wrap: 80
+---
+
+```{r}
+#| label: setup
+#| code-fold: true
+#| message: false
+#| warning: false
+
+# Options for figures
+knitr::opts_chunk$set(
+  fig.align = "center",
+  fig.retina = 3,
+  fig.width = 8.5,
+  fig.height = (11 * 0.618),
+  out.width = "80%",
+  collapse = TRUE,
+  dev = "ragg_png"
+)
+
+# Packages ---------------------------------------------------------------------
+purrr::walk(here::here("packages.R"), source)
+
+# Targets ----------------------------------------------------------------------
+tar_config_set(
+  store = here::here("_targets"),
+  script = here::here("_targets.R")
+)
+
+# Allow math to be rendered in tinytable
+options(tinytable_html_mathjax = TRUE)
+
+# Results ----------------------------------------------------------------------
+## Data
+tar_load(meta_data_split)
+
+# Meta analysis results
+tar_load(meta_analysis)
+```
+
+# Overview
+
+# Meta analysis results
+
+## FSC → WBI
+
+Here we will meta analyse the correlations between future
+self-continuity and health behaviours.
+
+```{r}
+#| label: data-fsc-wbi
+#| collapse: true
+
+meta_analysis$fsc_wbi_mean$data
+```
+
+### Model results
+
+```{r}
+#| label: meta-fsc-wbi
+#| collapse: true
+meta_analysis$fsc_wbi_mean$model_fit
+```
+
+The random-effects meta-analysis included 27 effect sizes and indicated a
+**positive association between future self-continuity and health behaviours**.
+The pooled effect size was
+$r = 0.22 \;[0.18, 0.26], \; z = 10.50, p < 0.001$.
+
+The magnitude of the effect size was **small**.
+
+In addition, there was little evidence of between study heterogeneity.
+
+```{r}
+#| label: tbl-fsc-wbi
+#| tbl-cap: "Estimated heterogeneity statistics for the relationship between future self continuity and health behaviours"
+#| code-fold: true
+
+meta_analysis$fsc_wbi_mean$hetero_tbl
+```
+
+### Funnel plot
+
+```{r}
+#| label: funnel-fsc-wbi
+#| code-fold: true
+
+meta_analysis$fsc_wbi_mean$model_fit |> meta::funnel()
+```
+
+```{r}
+#| label: edgar-fsc-wbi
+#| collapse: true
+
+meta_analysis$fsc_wbi_mean$model_fit |> regtest()
+```
+
+Based off the above funnel plot and the results from Edgars regression, we can
+conclude there is no evidence of small sample bias or publication bias.
+
+### Forest plot
+
+```{r}
+#| label: forest-fsc-wbi
+#| code-fold: true
+
+meta_analysis$fsc_wbi_mean$model_fit |> forest()
+```
+
+### Moderator & Subgroup analysis
+
+Because there was evidence of between study heterogeneity we will run a set of
+subgroup analyses and meta-regressions of the relationship between future
+self continuity and health behaviours.
+
+#### Subgroup analyses
+
+::: {.callout-tip}
+## Is there a different effect based off sample type?
+:::
+
+First let's look at the results we get when we only consider **community**
+samples.
+
+```{r}
+#| label: subgroup-1a
+#| collapse: true
+
+sub_1a <- rma(
+  yi = z,
+  vi = vi,
+  subset = sample == "community",
+  data = meta_analysis$fsc_wbi_mean$data
+)
+
+sub_1a
+```
+
+And then only for **student** samples.
+
+```{r}
+#| label: subgroup-1b
+#| collapse: true
+
+sub_1b <- rma(
+  yi = z,
+  vi = vi,
+  subset = sample == "student",
+  data = meta_analysis$fsc_wbi_mean$data
+)
+
+sub_1b
+```
+
+Let's compare both sets of results now
+
+```{r}
+#| label: subgroup-test-1
+#| collapse: true
+
+# Combine both sets of results
+sample_results <- tibble(
+  sample = c("community", "student"),
+  estimate = c(coef(sub_1a), coef(sub_1b)),
+  std_error = c(se(sub_1a), se(sub_1b)),
+  tau_sq = c(sub_1a$tau2, sub_1b$tau2)
+)
+
+# Fit a fixed effects model between the studies
+rma(estimate, sei = std_error, mods = ~ sample, method = "FE", data = sample_results)
+```
+
+The subgroup analysis based off sample type was non-significant,
+$Q(1)   =  0.29, p  = 0.589$. The effects from community samples
+$(r_{avg } =  .21 [0.16, 0.26]; k =  21)$ were not significantly different from
+those obtained from the student samples
+$(r_{avg}  = .23 [0.19, 0.28]; k  =  6$.
+
+---
+
+::: {.callout-note}
+## Is there a different effect based off being a lab study or not?
+:::
+
+First let's look at the results we get when we only consider **lab**
+samples.
+
+```{r}
+#| label: subgroup-2a
+#| collapse: true
+
+sub_2a <- rma(
+  yi = z,
+  vi = vi,
+  subset = lab_study == TRUE,
+  data = meta_analysis$fsc_wbi_mean$data
+)
+
+sub_2a
+```
+
+And then only for **published** samples.
+
+```{r}
+#| label: subgroup-2b
+#| collapse: true
+
+sub_2b <- rma(
+  yi = z,
+  vi = vi,
+  subset = lab_study == FALSE,
+  data = meta_analysis$fsc_wbi_mean$data
+)
+
+sub_2b
+```
+
+Let's compare both sets of results now
+
+```{r}
+#| label: subgroup-test-2
+#| collapse: true
+
+# Combine both sets of results
+lab_results <- tibble(
+  sample = c("lab", "published"),
+  estimate = c(coef(sub_2a), coef(sub_2b)),
+  std_error = c(se(sub_2a), se(sub_2b)),
+  tau_sq = c(sub_2a$tau2, sub_2b$tau2)
+)
+
+# Fit a fixed effects model between the studies
+rma(estimate, sei = std_error, mods = ~ sample, method = "FE", data = lab_results)
+```
+
+The subgroup analysis based off being a lab or published study was also
+non-significant, $Q(1)   =  0.99, p  = 0.319$. The effects from lab samples
+$(r_{avg } =  .20 [0.18, 0.23]; k =  21)$ were not significantly different from
+those obtained from the published samples
+$(r_{avg}  = .29 [0.13, 0.45]; k  = 6$.
+
+
+---
+
+::: {.callout-note}
+## Is there a different effect based off FSC measure?
+:::
+
+As there is only one experimental study in the data, we will exclude this from
+the analysis and only look at the differences between **single-item** and
+**multi-item** samples
+
+First let's look at the results we get when we only consider **single item**
+samples.
+
+```{r}
+#| label: subgroup-3a
+#| collapse: true
+
+sub_3a <- rma(
+  yi = z,
+  vi = vi,
+  subset = fsc_measure == "single-item",
+  data = meta_analysis$fsc_wbi_mean$data
+)
+
+sub_3a
+```
+
+And then only for **multi-item** samples.
+
+```{r}
+#| label: subgroup-3b
+#| collapse: true
+
+sub_3b <- rma(
+  yi = z,
+  vi = vi,
+  subset = fsc_measure == "multi-item",
+  data = meta_analysis$fsc_wbi_mean$data
+)
+
+sub_3b
+```
+
+Let's compare both sets of results now
+
+```{r}
+#| label: subgroup-test-3
+#| collapse: true
+
+# Combine both sets of results
+measure_results <- tibble(
+  sample = c("single-item", "multi-item"),
+  estimate = c(coef(sub_3a), coef(sub_3b)),
+  std_error = c(se(sub_3a), se(sub_3b)),
+  tau_sq = c(sub_3a$tau2, sub_3b$tau2)
+)
+
+# Fit a fixed effects model between the studies
+rma(
+  estimate,
+  sei = std_error,
+  mods = ~sample,
+  method = "FE",
+  data = measure_results
+)
+```
+
+The subgroup analysis based off FSC measure was also
+non-significant, $Q(1)  =  0.52, p  = 0.469$. The effects from single-item samples
+$(r_{avg } =  .20 [0.17, 0.23]; k =  18)$ were not significantly different from
+those obtained from the multi-item samples
+$(r_{avg}  = .24 [0.14, 0.35]; k  = 8$.
+
+#### Moderating analysis
+
+::: {.callout-note}
+## Is there a moderating effect of gender?
+:::
+
+```{r}
+#| label: mod-analysis-1a
+#| collapse: true
+
+mod_1 <- rma(
+  yi = z,
+  vi = vi,
+  mods = ~percent_female,
+  data = meta_analysis$fsc_wbi_mean$data
+)
+
+mod_1
+```
+
+::: {.callout-tip}
+## No significant moderating effect of gender
+:::
+
+---
+
+::: {.callout-note}
+## Is there a moderating effect of age?
+:::
+
+```{r}
+#| label: mod-analysis-1b
+#| collapse: true
+
+mod_2 <- rma(
+  yi = z,
+  vi = vi,
+  mods = ~mean_age,
+  data = meta_analysis$fsc_wbi_mean$data
+)
+
+mod_2
+```
+
+::: {.callout-tip}
+## No significant moderating effect of age
+:::
+
+## FSC → FSRH
+
+Here we will meta analyse the correlations between future
+self-continuity and future self rated health.
+
+```{r}
+#| label: data-fsc-fsrh
+#| collapse: true
+
+meta_analysis$fsc_fsrh$data
+```
+
+### Model results
+
+```{r}
+#| label: meta-fsc-fsrh
+#| collapse: true
+
+meta_analysis$fsc_fsrh$model_fit
+```
+
+The random-effects meta-analysis included 16 effect sizes and indicated a
+**positive association between future self-continuity and future self rated
+health**. The pooled effect size was
+$r = 0.13 \;[0.10, 0.16], \; z = 7.93, p < 0.001$.
+
+The magnitude of the effect size was **small**.
+
+In addition, there was little evidence of between study heterogeneity.
+
+```{r}
+#| label: tbl-fsc-fsrh
+#| tbl-cap: "Estimated heterogeneity statistics for the relationship between future self continuity and poorer future self-rated health"
+#| code-fold: true
+
+meta_analysis$fsc_fsrh$hetero_tbl
+```
+
+### Funnel plot
+
+```{r}
+#| label: funnel-fsc-fsrh
+#| code-fold: true
+
+meta_analysis$fsc_fsrh$model_fit |> meta::funnel()
+```
+
+```{r}
+#| label: edgar-fsc-fsrh
+#| collapse: true
+
+meta_analysis$fsc_fsrh$model_fit |> regtest()
+```
+
+Based off the above funnel plot and the results from Edgars regression, we can
+conclude there is no evidence of small sample bias or publication bias.
+
+### Forest plot
+
+```{r}
+#| label: forest-fsc-fsrh
+#| code-fold: true
+
+meta_analysis$fsc_fsrh$model_fit |> forest()
+```
+
+## FSRH → WBI
+
+Here we will meta analyse the correlations between poorer future self-rated
+health and wellness behaviours
+
+```{r}
+#| label: data-fsrh-wbi
+#| collapse: true
+
+meta_analysis$wbi_mean_fsrh$data
+```
+
+### Results
+
+```{r}
+#| label: meta-fsrh-wbi
+#| collapse: true
+
+meta_analysis$wbi_mean_fsrh$model_fit
+```
+
+The random-effects meta-analysis included 16 effect sizes and indicated a
+**positive association between future self-continuity and future self rated
+health**. The pooled effect size was
+$r = 0.32 \;[0.28, 0.37], \; z = 15.71, p < 0.001$. The magnitude of the
+effect size was **small**.
+
+There was evidence of between study heterogeneity.
+
+```{r}
+#| label: tbl-fsrh-wbi
+#| tbl-cap: "Estimated heterogeneity statistics for the relationship between poorer future self-rated health and wellness behaviours"
+#| code-fold: true
+
+meta_analysis$wbi_mean_fsrh$hetero_tbl
+```
+
+### Funnel plot
+
+```{r}
+#| label: funnel-fsrh-wbi
+#| code-fold: true
+
+meta_analysis$wbi_mean_fsrh$model_fit |> meta::funnel()
+```
+
+```{r}
+#| label: edgar-fsrh-wbi
+#| collapse: true
+
+meta_analysis$wbi_mean_fsrh$model_fit |> regtest()
+```
+
+Based off the above funnel plot and the results from Edgars regression, we can
+conclude there is no evidence of small sample bias or publication bias.
+
+### Forest plot
+
+```{r}
+#| label: forest-fsrh-wbi
+#| code-fold: true
+
+meta_analysis$wbi_mean_fsrh$model_fit |> forest()
+```
+
+### Moderator analysis
+
+Because there was evidence of between study heterogeneity we will run a
+moderator analysis of the relationship between poorer self-rated health
+and wellness behaviour
+
+::: {.callout-note}
+Is there a moderating effect of gender?
+:::
+
+```{r}
+#| label: mod-analysis-1
+#| collapse: true
+
+mod_1 <- rma(
+  yi = z,
+  vi = vi,
+  mods = ~percent_female,
+  data = meta_analysis$wbi_mean_fsrh$data
+)
+
+mod_1
+```
+
+::: {.callout-tip}
+No significant moderating effect of gender
+:::
+
+---
+
+::: {.callout-note}
+Is there a moderating effect of age?
+:::
+
+```{r}
+#| label: mod-analysis-2
+#| collapse: true
+
+mod_2 <- rma(
+  yi = z,
+  vi = vi,
+  mods = ~mean_age,
+  data = meta_analysis$wbi_mean_fsrh$data
+)
+
+mod_2
+```
+
+::: {.callout-tip}
+No significant moderating effect of age
+:::
+
+---
+
+
+## FSC → WBI (Semi partial)
+
+Here we will meta analyse the semi partial correlations between future
+self-continuity and well behaviours.
+
+```{r}
+#| label: data-fsc-wbi-semi-partial
+#| collapse: true
+
+meta_analysis$fsc_wbi_mean_semi$data
+```
+
+### Results
+
+```{r}
+#| label: meta-fsc-wbi-semi-partial
+#| collapse: true
+
+meta_analysis$fsc_wbi_mean_semi$model_fit
+```
+
+The random-effects meta-analysis included 16 effect sizes and indicated a
+**positive association between future self-continuity and wellbeing behaviours**
+after accounting for future self-rated health. The pooled semi-partial effect
+size was $r = 0.17 \;[0.14, 0.21], \; z = 9.47, p < 0.001$. The magnitude of the
+effect size was **small**.
+
+There was little evidence of between study heterogeneity.
+
+```{r}
+#| label: tbl-fsc-wbi-semi-partial
+#| tbl-cap: "Estimated heterogeneity statistics for the semi partial relationship between future self continuity and wellness behaviours"
+#| code-fold: true
+
+meta_analysis$fsc_wbi_mean_semi$hetero_tbl
+```
+
+### Funnel plot
+
+```{r}
+#| label: funnel-fsc-wbi-semi-partial
+#| code-fold: true
+
+meta_analysis$fsc_wbi_mean_semi$model_fit |> meta::funnel()
+```
+
+```{r}
+#| label: edgar-fsc-wbi-semi-partial
+#| collapse: true
+
+meta_analysis$fsc_wbi_mean_semi$model_fit |> regtest()
+```
+
+Based off the above funnel plot and the results from Edgars regression, we can
+conclude there is no evidence of small sample bias or publication bias.
+
+### Forest plot
+
+```{r}
+#| label: forest-fsc-wbi-semi-partial
+#| code-fold: true
+
+meta_analysis$fsc_wbi_mean_semi$model_fit |> forest()
+```

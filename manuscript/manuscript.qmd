@@ -1,0 +1,114 @@
+---
+title: |
+  A mixed meta-analysis of future self-continuity and health behaviours
+date: 2026-08-28
+author:
+    - name: Fuschia Sirois
+      affiliation: Durham University
+      email: fuschia.sirois@durham.ac.uk
+      orcid: 0000-0002-0927-277X
+      attributes:
+        corresponding: true
+    - name: Cormac Monaghan
+      affiliation: Maynooth University
+      url: https://c-monaghan.github.io/
+      email: cormacmonaghan@protonmail.com
+      orcid: 0000-0001-9012-3060
+correspondence-prefix: "Correspondence concerning this article should be addressed to"
+code-repo: "Access the code, data, and analysis at <https://github.com/C-Monaghan/filthy-fowl>"
+bibliography: references.bib
+csl: csl/apa.csl
+editor:
+  markdown:
+    wrap: 80
+format:
+  docx:
+    reference-doc: _extensions/c-monaghan/shifu/styles/reference.docx
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# Setting up -------------------------------------------------------------------
+knitr::opts_chunk$set(
+  echo = FALSE,
+  include = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
+
+knitr::opts_chunk$set(
+  fig.align = "center",
+  fig.retina = 3,
+  fig.width = 12,
+  fig.height = 8,
+  out.width = "100%",
+  collapse = TRUE
+)
+
+# Packages ---------------------------------------------------------------------
+library(targets)
+
+# Targets ----------------------------------------------------------------------
+tar_config_set(
+  store = here::here("../_targets"),
+  script = here::here("../_targets.R")
+)
+
+# Data -------------------------------------------------------------------------
+tar_load(meta_analysis) # Meta analysis results
+```
+
+# Introduction {.hide}
+
+# Methods
+
+## Participants and procedure
+
+This pre-registered study (https://osf.io/ blinded for review) analyses data
+from **XX** independent studies (total N = **XX**)
+
+## Measures
+
+## Future self continuity
+
+## Wellness behaviours
+
+## Self-rated health
+
+## Data analysis
+
+# Results
+
+## Future self continuity and wellness behaviours
+
+## Future self continuity, self rated health, and wellness behaviours
+
+The meta-analysis of the associations between future self continuity and poor
+FSRH across 16 samples revealed a negative relationship between the two
+variables. (see Table XX). Heterogeneity tests indicated no significant
+variability between the studies $(Q(15) = 21.19, p = 0.131, I^2 = 0.00\%, \tau^2 = 0.00$.
+
+For poor FSRH and wellness behaviours, a consistent negative relationship was
+observed across the same 16 samples, with an overall small effect effect size.
+Significant heterogeneity was observed $Q(15) = 26.50, p = 0.033, I^2 = 32.65\$, \tau^2 = 0.002$
+suggesting that moderator analyses were warranted.
+
+Moderator analyses for the possible impact of sample type could not be conducted
+as there were fewer than 3 studies per subgroup for each of the analyses.
+Meta-regression testing of the potential influence of participant age on the
+effect between poor FSRH and wellness behaviours was non-significant
+$\beta = -0.001 \; [-0.01, 0.01]$, $Q_\text{model}(1) = 0.06, p = 0.79$,
+$Q_\text{residual}(14) = 26.26, p = 0.024$. In addition, the meta-regression
+of the potential impact of participant gender was non-significant
+$\beta = -0.12 \; [-0.34, 0.11]$, $Q_\text{model}(1) = 1.04, p = 0.308$,
+$Q_\text{residual}(14) = 25.34, p = 0.031$.
+
+Finally, the meta-analysis of the semi-partial correlations (adjusting
+for poor FSRH) between future self continuity and wellness behaviours suggested
+a small effect. Heterogeneity tests were non-significant
+$Q(15) = 21.44, p = 0.12, I^2 = 15.46\%, \tau^2 = 0.0008$ indicating that
+moderator analyses were not warranted.
+
+**Finish section**

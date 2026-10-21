@@ -1,0 +1,29 @@
+---
+title: Model overview
+editor:
+  markdown:
+    wrap: 80
+---
+
+# Meta analysis
+
+Meta-analyses were conducted to synthesise the associations between future self-continuity (FSC), future self-rated health (FSRH), and wellness behaviours across studies. The primary effect size was the Pearson correlation coefficient, ($r$), representing the strength and direction of the association between the variables of interest. Where appropriate, these correlations were converted to Fisher's ($z$) values prior to meta-analysis such that:
+
+$$
+z = 0.5 \times log \Big(\frac{1 + r}{1 - r} \Big).
+$$
+Additionally the sampling variance for each study was calculated as:
+
+$$
+v_i = \frac{1}{n_i - 3}
+$$
+
+where $n_i$ denotes the sample size for study $i$.
+
+Separate random-effects meta-analytic models were estimated for each substantive relationship.
+
+## Assessment of heterogeneity
+
+Between-study heterogeneity was evaluated using Cochran's ($Q$) statistic, along with the the estimated between-study variance ($\tau^2$), and $I^2$ statistic. Where evidence of heterogeneity was observed, this variability was considered in subsequent moderator analyses rather than treating the pooled association as necessarily representing a single invariant effect across studies.
+
+## Moderator analyses
